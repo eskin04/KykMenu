@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "996345658777",
+    "project_id": "kykmenu-7fe1e",
+    "storage_bucket": "kykmenu-7fe1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996345658777:android:88ac0f128ff668a0b0a708",
+        "android_client_info": {
+          "package_name": "com.example.kykmenu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfmqd8txJfll6kKVNupvJU1PHFWBZAGEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
