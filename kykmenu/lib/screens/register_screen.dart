@@ -1,7 +1,38 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../service/auth.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  String? errorMessage = '';
+
+  // Kayıt olma işlemi için gerekli fonksiyon
+  Future<void> register() async {
+    try {
+      await Auth().creatUser(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +67,10 @@ class RegisterScreen extends StatelessWidget {
 
                 // E-mail alanı
                 TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+
                   style: TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration("E-mail", Icons.email),
                 ),
@@ -43,6 +78,8 @@ class RegisterScreen extends StatelessWidget {
 
                 // Kullanıcı adı alanı
                 TextField(
+                  controller: usernameController,
+                  textInputAction: TextInputAction.next,
                   style: TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration(
                     "Kullanıcı Adı",
@@ -53,6 +90,8 @@ class RegisterScreen extends StatelessWidget {
 
                 // Şifre alanı
                 TextField(
+                  controller: passwordController,
+                  textInputAction: TextInputAction.next,
                   obscureText: true,
                   style: TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration("Şifre", Icons.lock),
@@ -61,15 +100,26 @@ class RegisterScreen extends StatelessWidget {
 
                 // Şifre tekrar alanı
                 TextField(
+                  controller: confirmPasswordController,
+                  textInputAction: TextInputAction.done,
                   obscureText: true,
                   style: TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration("Şifre Tekrar", Icons.lock),
                 ),
                 SizedBox(height: 24),
 
+                errorMessage != null
+                    ? Text(
+                      errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 16),
+                    )
+                    : const SizedBox.shrink(),
+
                 // Kayıt Ol Butonu
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    register();
+                  },
                   style: _buildButtonStyle(Colors.orangeAccent),
                   child: Text(
                     'Kayıt Ol',

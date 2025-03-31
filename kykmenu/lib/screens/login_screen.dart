@@ -1,8 +1,34 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'register_screen.dart';
+import '../service/auth.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+  @override
+  // ignore: library_private_types_in_public_api
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String? errorMessage = '';
+
+  Future<void> login() async {
+    try {
+      await Auth().login(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +66,10 @@ class LoginScreen extends StatelessWidget {
 
                 // E-mail alanı
                 TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     filled: true,
@@ -57,6 +87,8 @@ class LoginScreen extends StatelessWidget {
 
                 // Şifre alanı
                 TextField(
+                  controller: passwordController,
+                  textInputAction: TextInputAction.done,
                   obscureText: true,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -72,10 +104,18 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 24),
+                errorMessage != null
+                    ? Text(
+                      errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 16),
+                    )
+                    : const SizedBox.shrink(),
 
                 // Giriş Yap Butonu
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    login();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orangeAccent,
                     foregroundColor: Colors.white,
