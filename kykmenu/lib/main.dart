@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart'; // Yeni dosyanı ekledik
+import 'screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Bunu ekle!
@@ -14,9 +14,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(), // Burada ayrı bir dosyaya taşıdık
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: LoginScreen());
   }
 }
