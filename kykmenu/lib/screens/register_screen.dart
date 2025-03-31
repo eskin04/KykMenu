@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../service/auth.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -26,9 +27,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: emailController.text,
         password: passwordController.text,
       );
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Başarılı"),
+            content: Text("Kayıt işlemi başarılı!"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Tamam"),
+              ),
+            ],
+          );
+        },
+      );
+
+      Future.delayed(Duration(seconds: 3), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ), // Giriş ekranına yönlendir
+        );
+      });
     } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+
+      // Firebase hata kodlarına göre Türkçe mesajlar döndürüyoruz
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage = 'Bu e-posta zaten kullanılıyor';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz e-posta adresi';
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Bu işlem şu anda kullanılamıyor';
+          break;
+        case 'weak-password':
+          errorMessage = 'Şifreniz çok zayıf, daha güçlü bir şifre girin';
+          break;
+        default:
+          errorMessage = 'Bütün alanları doldurduğunuzdan emin olun';
+          break;
+      }
+
       setState(() {
-        errorMessage = e.message;
+        this.errorMessage = errorMessage;
       });
     }
   }
@@ -106,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(color: Colors.white),
                   decoration: _buildInputDecoration("Şifre Tekrar", Icons.lock),
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 20),
 
                 errorMessage != null
                     ? Text(
@@ -116,6 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : const SizedBox.shrink(),
 
                 // Kayıt Ol Butonu
+                SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () {
                     register();
@@ -129,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 1),
 
                 // Geri Dön Butonu
                 TextButton(

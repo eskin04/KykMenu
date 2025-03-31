@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'register_screen.dart';
+import 'welcome_screen.dart';
 import '../service/auth.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,9 +23,42 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text,
         password: passwordController.text,
       );
+      // Giriş başarılıysa WelcomeScreen'e yönlendir
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+      );
     } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+
+      // Firebase hata kodlarına göre Türkçe mesajlar döndürüyoruz
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Bu kullanıcı bulunamadı';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Hatalı şifre';
+          break;
+        case 'email-already-in-use':
+          errorMessage = 'Bu e-posta zaten kullanılıyor';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz e-posta adresi';
+          break;
+        case 'user-disabled':
+          errorMessage = 'Hesabınız devre dışı bırakıldı';
+          break;
+        case 'too-many-requests':
+          errorMessage =
+              'Çok fazla deneme yaptınız, lütfen bir süre sonra tekrar deneyin';
+          break;
+        default:
+          errorMessage = 'Giriş Bilgilerinizi Kontrol Edin';
+          break;
+      }
+
       setState(() {
-        errorMessage = e.message;
+        this.errorMessage = errorMessage;
       });
     }
   }
@@ -103,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.lock, color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 20),
                 errorMessage != null
                     ? Text(
                       errorMessage!,
@@ -112,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     : const SizedBox.shrink(),
 
                 // Giriş Yap Butonu
+                SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () {
                     login();
@@ -132,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 1),
 
                 // Kayıt Ol Butonu
                 TextButton(
