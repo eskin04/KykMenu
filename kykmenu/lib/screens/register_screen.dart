@@ -26,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await Auth().creatUser(
         email: emailController.text,
         password: passwordController.text,
+        username: usernameController.text,
       );
 
       showDialog(
