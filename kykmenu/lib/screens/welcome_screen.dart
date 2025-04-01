@@ -143,11 +143,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void _showComments() {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return CommentsScreen(city: "Ankara", date: "2025-04-01");
+        return CommentsScreen(city: "Ankara", date: formattedDate);
       },
     );
   }
