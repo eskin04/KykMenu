@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:kykmenu/service/menu.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -14,29 +15,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   DateTime selectedDate = DateTime.now();
   bool isBreakfast = false;
   final ScrollController _scrollController = ScrollController();
-
-  final Map<int, Map<String, List<Map<String, dynamic>>>> menuData = {
-    1: {
-      'breakfast': [
-        {'name': 'Peynir', 'icon': FontAwesomeIcons.cheese},
-        {'name': 'Zeytin', 'icon': FontAwesomeIcons.seedling},
-        {'name': 'Ekmek', 'icon': FontAwesomeIcons.breadSlice},
-        {'name': 'Çay', 'icon': FontAwesomeIcons.mugHot},
-      ],
-      'dinner': [
-        {'name': 'Tavuk Fajita', 'icon': FontAwesomeIcons.drumstickBite},
-        {'name': 'Domates Çorbası', 'icon': FontAwesomeIcons.bowlFood},
-        {'name': 'Salçalı Spagetti', 'icon': FontAwesomeIcons.pizzaSlice},
-        {'name': 'Yoğurt', 'icon': FontAwesomeIcons.bowlRice},
-      ],
-    },
-  };
+  final MenuService _menuService = MenuService();
+  Map<String, dynamic>? dailyMenu;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
+      _fetchMenu();
     });
   }
 
@@ -50,6 +37,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  void _fetchMenu() async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String city = "Ankara"; // Şehir ismini kullanıcıdan alabilirsiniz
+    var menu = await _menuService.getDailyMenu(city: city, date: formattedDate);
+    setState(() {
+      dailyMenu = menu;
+    });
   }
 
   @override
@@ -81,7 +77,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     onTap: () {
                       setState(() {
                         selectedDate = day;
-                        _scrollToSelectedDate();
+                        _fetchMenu();
                       });
                     },
                     child: Container(
@@ -163,50 +159,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        DateFormat('d MMMM yyyy', 'tr_TR').format(selectedDate),
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade900,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.thumb_up),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.thumb_down),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    DateFormat('d MMMM yyyy', 'tr_TR').format(selectedDate),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green.shade900,
+                    ),
                   ),
                   Divider(),
-                  ...(menuData[selectedDate.day] != null &&
-                              menuData[selectedDate.day]![isBreakfast
-                                      ? 'breakfast'
-                                      : 'dinner'] !=
-                                  null
-                          ? menuData[selectedDate.day]![isBreakfast
-                              ? 'breakfast'
-                              : 'dinner']!
-                          : [])
-                      .map(
-                        (item) => ListTile(
-                          leading: Icon(item['icon'], color: Colors.green),
-                          title: Text(
-                            item['name'],
-                            style: GoogleFonts.poppins(fontSize: 16),
-                          ),
+                  if (dailyMenu != null)
+                    for (var item in (isBreakfast
+                            ? dailyMenu!['breakfast']
+                            : dailyMenu!['dinner'])
+                        .split(','))
+                      ListTile(
+                        leading: Icon(
+                          FontAwesomeIcons.utensils,
+                          color: Colors.green,
+                        ),
+                        title: Text(
+                          item.trim(),
+                          style: GoogleFonts.poppins(fontSize: 16),
+                        ),
+                      )
+                  else
+                    Center(
+                      child: Text(
+                        "Menü bulunamadı",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.red,
                         ),
                       ),
+                    ),
                   Divider(),
                   Align(
                     alignment: Alignment.bottomRight,
