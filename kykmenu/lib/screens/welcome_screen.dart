@@ -3,8 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kykmenu/service/menu.dart';
+import 'package:kykmenu/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kykmenu/service/comments_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -140,6 +142,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
+  void _showComments() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return CommentsScreen(city: "Ankara", date: "2025-04-01");
+      },
+    );
+  }
+
   void _scrollToSelectedDate() {
     int index = selectedDate.day - 1;
     double screenWidth = MediaQuery.of(context).size.width;
@@ -212,6 +224,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       setState(() {
                         selectedDate = day;
                         _fetchMenu();
+                        _fetchLikesAndDislikes();
                       });
                     },
                     child: Container(
@@ -366,6 +379,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+
+                      // Çıkış yapma butonu LoginScreen'e yönlendirme LoginScreen()
+                      IconButton(
+                        icon: Icon(Icons.logout, color: Colors.red),
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut().then((_) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
+                          });
+                        },
+                      ),
+
+                      IconButton(
+                        icon: Icon(Icons.comment, color: Colors.blue),
+                        onPressed: _showComments,
                       ),
                     ],
                   ),
