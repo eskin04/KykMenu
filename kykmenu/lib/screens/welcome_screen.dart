@@ -20,8 +20,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final MenuService _menuService = MenuService();
   Map<String, dynamic>? dailyMenu;
   String? userName;
-  int likes = 0;
-  int dislikes = 0;
+  List<dynamic> likedUsers = [];
+  List<dynamic> dislikedUsers = [];
+  bool? userLiked;
 
   List<String> icons = [
     'utensils',
@@ -75,6 +76,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void _fetchLikesAndDislikes() async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     String city = "Ankara";
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
     DocumentSnapshot menuDoc =
         await FirebaseFirestore.instance
@@ -86,10 +89,55 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (menuDoc.exists) {
       setState(() {
-        likes = (menuDoc['likes'] ?? 0) as int;
-        dislikes = (menuDoc['dislikes'] ?? 0) as int;
+        likedUsers = (menuDoc['likedUsers'] ?? []) as List<dynamic>;
+        dislikedUsers = (menuDoc['dislikedUsers'] ?? []) as List<dynamic>;
+        userLiked =
+            likedUsers.contains(user.uid)
+                ? true
+                : dislikedUsers.contains(user.uid)
+                ? false
+                : null;
       });
     }
+  }
+
+  // Kullanıcı beğeni veya beğenilmeme durumunu güncelleme fonksiyonu
+  void _updateLikes(bool isLike) async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String city = "Ankara";
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    DocumentReference menuDocRef = FirebaseFirestore.instance
+        .collection('menus')
+        .doc(city)
+        .collection(formattedDate.substring(0, 7))
+        .doc(formattedDate);
+
+    if (isLike) {
+      if (userLiked == true) {
+        likedUsers.remove(user.uid);
+      } else {
+        dislikedUsers.remove(user.uid);
+        likedUsers.add(user.uid);
+      }
+    } else {
+      if (userLiked == false) {
+        dislikedUsers.remove(user.uid);
+      } else {
+        likedUsers.remove(user.uid);
+        dislikedUsers.add(user.uid);
+      }
+    }
+
+    await menuDocRef.update({
+      'likedUsers': likedUsers,
+      'dislikedUsers': dislikedUsers,
+    });
+
+    setState(() {
+      userLiked = isLike;
+    });
   }
 
   void _scrollToSelectedDate() {
@@ -289,14 +337,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.thumb_up, color: Colors.green),
-                        onPressed: () {
-                          print("Beğenildi");
-                        },
+                        icon: Icon(
+                          Icons.thumb_up,
+                          color: userLiked == true ? Colors.green : Colors.grey,
+                        ),
+                        onPressed: () => _updateLikes(true),
                       ),
                       //Firebase'den beğeni sayısını çekme
                       Text(
-                        likes.toString(),
+                        likedUsers.length.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -304,14 +353,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
 
                       IconButton(
-                        icon: Icon(Icons.thumb_down, color: Colors.red),
-                        onPressed: () {
-                          print("Beğenilmedi");
-                        },
+                        icon: Icon(
+                          Icons.thumb_down,
+                          color: userLiked == false ? Colors.red : Colors.grey,
+                        ),
+                        onPressed: () => _updateLikes(false),
                       ),
                       //Firebase'den beğenilmeme sayısını çekme
                       Text(
-                        dislikes.toString(),
+                        dislikedUsers.length.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
