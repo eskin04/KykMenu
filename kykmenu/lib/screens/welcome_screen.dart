@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kykmenu/service/menu.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -17,10 +19,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final MenuService _menuService = MenuService();
   Map<String, dynamic>? dailyMenu;
+  String? userName;
+  int likes = 0;
+  int dislikes = 0;
 
   List<String> icons = [
-    'utensils', 'coffee', 'apple-alt', 'carrot', // Akşam Yemeği
-    'fish', 'hamburger', 'bread-slice', 'egg', // Kahvaltı
+    'utensils',
+    'coffee',
+    'apple-alt',
+    'carrot',
+    'fish',
+    'hamburger',
+    'bread-slice',
+    'egg',
   ];
 
   Map<String, IconData> iconMap = {
@@ -40,7 +51,45 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
       _fetchMenu();
+      _fetchUserName();
+      _fetchLikesAndDislikes();
     });
+  }
+
+  // Firestore'dan kullanıcı adını çekme fonksiyonu
+  void _fetchUserName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      setState(() {
+        userName = userDoc['username'] ?? 'Kullanıcı';
+      });
+    }
+  }
+
+  // Firestore'dan beğeni sayısını çekme fonksiyonu
+  void _fetchLikesAndDislikes() async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String city = "Ankara";
+
+    DocumentSnapshot menuDoc =
+        await FirebaseFirestore.instance
+            .collection('menus')
+            .doc(city)
+            .collection(formattedDate.substring(0, 7))
+            .doc(formattedDate)
+            .get();
+
+    if (menuDoc.exists) {
+      setState(() {
+        likes = (menuDoc['likes'] ?? 0) as int;
+        dislikes = (menuDoc['dislikes'] ?? 0) as int;
+      });
+    }
   }
 
   void _scrollToSelectedDate() {
@@ -80,6 +129,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: Column(
           children: [
             SizedBox(height: 20),
+
+            // **Kullanıcı Adını Gösterme Alanı**
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Hoşgeldin, ${userName ?? '...'}",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade900,
+                ),
+              ),
+            ),
+
+            SizedBox(height: 10),
+
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               controller: _scrollController,
@@ -220,12 +285,39 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ),
                   Divider(),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: IconButton(
-                      icon: Icon(Icons.comment),
-                      onPressed: () {},
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.thumb_up, color: Colors.green),
+                        onPressed: () {
+                          print("Beğenildi");
+                        },
+                      ),
+                      //Firebase'den beğeni sayısını çekme
+                      Text(
+                        likes.toString(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      IconButton(
+                        icon: Icon(Icons.thumb_down, color: Colors.red),
+                        onPressed: () {
+                          print("Beğenilmedi");
+                        },
+                      ),
+                      //Firebase'den beğenilmeme sayısını çekme
+                      Text(
+                        dislikes.toString(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
