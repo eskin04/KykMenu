@@ -18,6 +18,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final MenuService _menuService = MenuService();
   Map<String, dynamic>? dailyMenu;
 
+  List<String> icons = [
+    'utensils', 'coffee', 'apple-alt', 'carrot', // Akşam Yemeği
+    'fish', 'hamburger', 'bread-slice', 'egg', // Kahvaltı
+  ];
+
+  Map<String, IconData> iconMap = {
+    'utensils': FontAwesomeIcons.utensils,
+    'coffee': FontAwesomeIcons.mugHot,
+    'apple-alt': FontAwesomeIcons.appleAlt,
+    'carrot': FontAwesomeIcons.carrot,
+    'fish': FontAwesomeIcons.fish,
+    'hamburger': FontAwesomeIcons.hamburger,
+    'bread-slice': FontAwesomeIcons.breadSlice,
+    'egg': FontAwesomeIcons.egg,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -41,11 +57,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void _fetchMenu() async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    String city = "Ankara"; // Şehir ismini kullanıcıdan alabilirsiniz
+    String city = "Ankara";
     var menu = await _menuService.getDailyMenu(city: city, date: formattedDate);
     setState(() {
       dailyMenu = menu;
     });
+  }
+
+  IconData getMealIcon(int index, bool isBreakfast) {
+    int iconIndex = isBreakfast ? (index % 4) + 4 : index % 4;
+    return iconMap[icons[iconIndex]] ?? FontAwesomeIcons.utensils;
   }
 
   @override
@@ -169,20 +190,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   Divider(),
                   if (dailyMenu != null)
-                    for (var item in (isBreakfast
+                    ...((isBreakfast
                             ? dailyMenu!['breakfast']
                             : dailyMenu!['dinner'])
-                        .split(','))
-                      ListTile(
-                        leading: Icon(
-                          FontAwesomeIcons.utensils,
-                          color: Colors.green,
-                        ),
-                        title: Text(
-                          item.trim(),
-                          style: GoogleFonts.poppins(fontSize: 16),
-                        ),
-                      )
+                        .toString()
+                        .split(',')
+                        .asMap()
+                        .entries
+                        .map(
+                          (entry) => ListTile(
+                            leading: Icon(
+                              getMealIcon(entry.key, isBreakfast),
+                              color: Colors.green,
+                            ),
+                            title: Text(
+                              entry.value.trim(),
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
+                          ),
+                        ))
                   else
                     Center(
                       child: Text(
