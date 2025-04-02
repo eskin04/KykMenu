@@ -11,7 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String selectedCity = 'Antalya';
+  String selectedCity = 'Ankara';
   bool notificationsEnabled = false;
 
   final List<String> cities = [
@@ -29,85 +29,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
       'city': selectedCity,
-      // 'notificationsEnabled': notificationsEnabled,
     }, SetOptions(merge: true));
   }
 
+  void _loadCity() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    DocumentSnapshot doc =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+    if (doc.exists) {
+      setState(() {
+        selectedCity = doc['city'] ?? 'Ankara';
+      });
+    }
+  }
+
   @override
+  void initState() {
+    super.initState();
+    _loadCity();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    _saveCity();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => WelcomeScreen()),
-                    );
-                  },
-                ),
-                Text(
-                  'Ayarlar',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Text(
-              'Şehir Seçiniz:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.black54),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedCity,
-                  isExpanded: true,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedCity = newValue!;
-                      _saveCity(); // Seçilen şehri kaydet
-                    });
-                  },
-                  items:
-                      cities.map<DropdownMenuItem<String>>((String city) {
-                        return DropdownMenuItem<String>(
-                          value: city,
-                          child: Text(city),
-                        );
-                      }).toList(),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Günlük bildirim al', style: TextStyle(fontSize: 16)),
-                Switch(
-                  value: notificationsEnabled,
-                  onChanged: (bool value) {
-                    setState(() {
-                      notificationsEnabled = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
+      appBar: AppBar(
+        title: Text('Ayarlar', style: TextStyle(fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            _saveCity();
+            //loginscreen'e yönlendir
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeScreen()),
+            );
+          },
         ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(16.0),
+        children: [
+          ListTile(
+            leading: Icon(Icons.location_city),
+            title: Text('Şehir Seçiniz'),
+            trailing: DropdownButton<String>(
+              value: selectedCity,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedCity = newValue!;
+                  _saveCity();
+                });
+              },
+              items:
+                  cities.map((String city) {
+                    return DropdownMenuItem<String>(
+                      value: city,
+                      child: Text(city),
+                    );
+                  }).toList(),
+            ),
+          ),
+          Divider(),
+          SwitchListTile(
+            title: Text('Günlük Bildirim Al'),
+            value: notificationsEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                notificationsEnabled = value;
+              });
+            },
+          ),
+        ],
       ),
     );
   }

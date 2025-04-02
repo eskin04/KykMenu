@@ -224,7 +224,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
               ),
               child: Text(
-                'Hoşgeldin $userName' ?? 'Kullanıcı',
+                'Hoşgeldin $userName',
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
