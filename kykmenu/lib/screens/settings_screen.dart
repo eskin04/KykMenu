@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kykmenu/screens/welcome_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,15 +23,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'Adana',
   ];
 
+  void _saveCity() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'city': selectedCity,
+      // 'notificationsEnabled': notificationsEnabled,
+    }, SetOptions(merge: true));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Ayarlar'), backgroundColor: Colors.green),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Column(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    _saveCity();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                    );
+                  },
+                ),
+                Text(
+                  'Ayarlar',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             Text(
               'Şehir Seçiniz:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -48,6 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedCity = newValue!;
+                      _saveCity(); // Seçilen şehri kaydet
                     });
                   },
                   items:
