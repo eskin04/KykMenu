@@ -22,6 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final MenuService _menuService = MenuService();
   Map<String, dynamic>? dailyMenu;
   String? userName;
+  String selectedCity = 'Ankara';
   List<dynamic> likedUsers = [];
   List<dynamic> dislikedUsers = [];
   bool? userLiked;
@@ -53,6 +54,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToSelectedDate();
+      _fetchUserCity();
       _fetchMenu();
       _fetchUserName();
       _fetchLikesAndDislikes();
@@ -74,10 +76,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  void _fetchUserCity() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      setState(() {
+        selectedCity = userDoc['city'] ?? 'Ankara';
+        print("Seçilen şehir: $selectedCity");
+      });
+    }
+  }
+
   // Firestore'dan beğeni sayısını çekme fonksiyonu
   void _fetchLikesAndDislikes() async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    String city = "Ankara";
+    String city = selectedCity;
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -106,7 +123,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   // Kullanıcı beğeni veya beğenilmeme durumunu güncelleme fonksiyonu
   void _updateLikes(bool isLike) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    String city = "Ankara";
+    String city = selectedCity;
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -149,7 +166,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return CommentsScreen(city: "Ankara", date: formattedDate);
+        return CommentsScreen(city: selectedCity, date: formattedDate);
       },
     );
   }
@@ -168,7 +185,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void _fetchMenu() async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    String city = "Ankara";
+    String city = selectedCity;
     var menu = await _menuService.getDailyMenu(city: city, date: formattedDate);
     setState(() {
       dailyMenu = menu;

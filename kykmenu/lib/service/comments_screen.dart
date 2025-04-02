@@ -7,8 +7,7 @@ class CommentsScreen extends StatefulWidget {
   final String city;
   final String date;
 
-  const CommentsScreen({Key? key, required this.city, required this.date})
-    : super(key: key);
+  const CommentsScreen({super.key, required this.city, required this.date});
 
   @override
   _CommentsScreenState createState() => _CommentsScreenState();
