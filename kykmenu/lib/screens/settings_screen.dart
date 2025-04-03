@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kykmenu/screens/welcome_screen.dart';
+import 'package:app_settings/app_settings.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,7 +13,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String selectedCity = 'Ankara';
-  bool notificationsEnabled = false;
 
   final List<String> cities = [
     'Antalya',
@@ -23,16 +23,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'Adana',
   ];
 
-  void _saveCity() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-      'city': selectedCity,
-    }, SetOptions(merge: true));
+  @override
+  void initState() {
+    super.initState();
+    _loadUserSettings();
   }
 
-  void _loadCity() async {
+  void _openAppSettings() async {
+    await AppSettings.openAppSettings(type: AppSettingsType.notification);
+  }
+
+  // Kullanıcının şehir ve bildirim ayarlarını Firestore'dan çek
+  void _loadUserSettings() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -49,12 +51,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadCity();
+  // Kullanıcının şehir ayarını Firestore'a kaydet
+  void _saveCity() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'city': selectedCity,
+    }, SetOptions(merge: true));
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +70,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             _saveCity();
-            //loginscreen'e yönlendir
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => WelcomeScreen()),
@@ -95,14 +101,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           Divider(),
-          SwitchListTile(
-            title: Text('Günlük Bildirim Al'),
-            value: notificationsEnabled,
-            onChanged: (bool value) {
-              setState(() {
-                notificationsEnabled = value;
-              });
-            },
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade50,
+                ),
+                onPressed: _openAppSettings,
+                child: Text(
+                  'Bildirim Ayarlarını Aç',
+                  style: TextStyle(color: const Color.fromARGB(255, 3, 45, 80)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
