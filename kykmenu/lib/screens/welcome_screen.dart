@@ -27,6 +27,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   List<dynamic> likedUsers = [];
   List<dynamic> dislikedUsers = [];
   bool? userLiked;
+  bool menuExists = true; // Menü var mı, yok mu bilgisini saklayacak
 
   List<String> icons = [
     'utensils',
@@ -93,7 +94,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  // Firestore'dan beğeni sayısını çekme fonksiyonu
   void _fetchLikesAndDislikes() async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     String city = selectedCity;
@@ -109,20 +109,51 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             .get();
 
     if (menuDoc.exists) {
-      setState(() {
-        likedUsers = (menuDoc['likedUsers'] ?? []) as List<dynamic>;
-        dislikedUsers = (menuDoc['dislikedUsers'] ?? []) as List<dynamic>;
-        userLiked =
-            likedUsers.contains(user.uid)
-                ? true
-                : dislikedUsers.contains(user.uid)
-                ? false
-                : null;
-      });
+      List<dynamic> fetchedLikedUsers =
+          (menuDoc.data() as Map<String, dynamic>?)?.containsKey(
+                    'likedUsers',
+                  ) ==
+                  true
+              ? List.from(menuDoc['likedUsers'])
+              : [];
+
+      List<dynamic> fetchedDislikedUsers =
+          (menuDoc.data() as Map<String, dynamic>?)?.containsKey(
+                    'dislikedUsers',
+                  ) ==
+                  true
+              ? List.from(menuDoc['dislikedUsers'])
+              : [];
+
+      bool? newUserLiked;
+      if (fetchedLikedUsers.contains(user.uid)) {
+        newUserLiked = true;
+      } else if (fetchedDislikedUsers.contains(user.uid)) {
+        newUserLiked = false;
+      } else {
+        newUserLiked = null;
+      }
+
+      if (mounted) {
+        setState(() {
+          likedUsers = fetchedLikedUsers;
+          dislikedUsers = fetchedDislikedUsers;
+          userLiked = newUserLiked;
+          menuExists = true; // Menü bulundu
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          likedUsers = [];
+          dislikedUsers = [];
+          userLiked = null;
+          menuExists = false; // Menü bulunamadı
+        });
+      }
     }
   }
 
-  // Kullanıcı beğeni veya beğenilmeme durumunu güncelleme fonksiyonu
   void _updateLikes(bool isLike) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     String city = selectedCity;
@@ -135,29 +166,42 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         .collection(formattedDate.substring(0, 7))
         .doc(formattedDate);
 
-    if (isLike) {
-      if (userLiked == true) {
-        likedUsers.remove(user.uid);
-      } else {
-        dislikedUsers.remove(user.uid);
-        likedUsers.add(user.uid);
-      }
-    } else {
-      if (userLiked == false) {
-        dislikedUsers.remove(user.uid);
-      } else {
-        likedUsers.remove(user.uid);
-        dislikedUsers.add(user.uid);
-      }
+    // Menü dokümanı yoksa, yeni oluştur
+    await menuDocRef.set({
+      'likedUsers': [],
+      'dislikedUsers': [],
+    }, SetOptions(merge: true)); // Var olan veriyi silmeden ekler
+
+    if (userLiked == isLike) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isLike ? "Zaten beğendiniz!" : "Zaten beğenmediniz!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      setState(() {
+        userLiked = isLike;
+      });
+
+      return;
     }
 
+    // Beğeni durumunu değiştir
     await menuDocRef.update({
-      'likedUsers': likedUsers,
-      'dislikedUsers': dislikedUsers,
+      'likedUsers':
+          isLike
+              ? FieldValue.arrayUnion([user.uid])
+              : FieldValue.arrayRemove([user.uid]),
+      'dislikedUsers':
+          !isLike
+              ? FieldValue.arrayUnion([user.uid])
+              : FieldValue.arrayRemove([user.uid]),
     });
 
     setState(() {
       userLiked = isLike;
+      _fetchLikesAndDislikes();
     });
   }
 
@@ -394,6 +438,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 ),
                               ))
                         else
+                          //menuNo
                           Center(
                             heightFactor: 9.75,
                             child: Text(
@@ -413,14 +458,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Row(
                                   children: [
                                     IconButton(
-                                      icon: Icon(
-                                        Icons.thumb_up,
-                                        color:
-                                            userLiked == true
-                                                ? Colors.green
-                                                : Colors.grey,
-                                      ),
-                                      onPressed: () => _updateLikes(true),
+                                      onPressed:
+                                          menuExists
+                                              ? () => _updateLikes(true)
+                                              : null, // Menü yoksa buton devre dışı
+                                      icon: Icon(Icons.thumb_up),
+                                      color:
+                                          userLiked == true
+                                              ? Colors.green
+                                              : Colors.grey,
                                     ),
                                     Text(
                                       likedUsers.length.toString(),
@@ -434,14 +480,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Row(
                                   children: [
                                     IconButton(
-                                      icon: Icon(
-                                        Icons.thumb_down,
-                                        color:
-                                            userLiked == false
-                                                ? Colors.red
-                                                : Colors.grey,
-                                      ),
-                                      onPressed: () => _updateLikes(false),
+                                      onPressed:
+                                          menuExists
+                                              ? () => _updateLikes(false)
+                                              : null, // Menü yoksa buton devre dışı
+                                      icon: Icon(Icons.thumb_down),
+                                      color:
+                                          userLiked == false
+                                              ? Colors.red
+                                              : Colors.grey,
                                     ),
                                     Text(
                                       dislikedUsers.length.toString(),
@@ -455,12 +502,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               ],
                             ),
 
-                            //Firebase'den beğeni sayısını çekme
-
-                            // Çıkış yapma butonu LoginScreen'e yönlendirme LoginScreen()
                             IconButton(
                               icon: Icon(Icons.comment, color: Colors.blue),
-                              onPressed: _showComments,
+                              onPressed:
+                                  menuExists
+                                      ? _showComments
+                                      : null, // Menü yoksa buton devre dışı
                             ),
                           ],
                         ),
@@ -530,8 +577,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ],
               ),
             ),
-
-            // bir boxın içinde şehir ismi
           ],
         ),
       ),
