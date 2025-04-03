@@ -166,43 +166,51 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         .collection(formattedDate.substring(0, 7))
         .doc(formattedDate);
 
-    // Menü dokümanı yoksa, yeni oluştur
-    await menuDocRef.set({
-      'likedUsers': [],
-      'dislikedUsers': [],
-    }, SetOptions(merge: true)); // Var olan veriyi silmeden ekler
+    // Mevcut veriyi Firestore'dan çek
+    DocumentSnapshot menuDoc = await menuDocRef.get();
+    List<dynamic> likedUsers = [];
+    List<dynamic> dislikedUsers = [];
 
-    if (userLiked == isLike) {
+    if (menuDoc.exists) {
+      Map<String, dynamic>? data = menuDoc.data() as Map<String, dynamic>?;
+
+      likedUsers =
+          data?['likedUsers'] != null ? List.from(data!['likedUsers']) : [];
+      dislikedUsers =
+          data?['dislikedUsers'] != null
+              ? List.from(data!['dislikedUsers'])
+              : [];
+    }
+
+    // Eğer kullanıcı zaten aynı şekilde oy verdiyse uyarı ver
+    if ((isLike && likedUsers.contains(user.uid)) ||
+        (!isLike && dislikedUsers.contains(user.uid))) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(isLike ? "Zaten beğendiniz!" : "Zaten beğenmediniz!"),
           duration: Duration(seconds: 2),
         ),
       );
-
-      setState(() {
-        userLiked = isLike;
-      });
-
       return;
     }
 
-    // Beğeni durumunu değiştir
-    await menuDocRef.update({
-      'likedUsers':
-          isLike
-              ? FieldValue.arrayUnion([user.uid])
-              : FieldValue.arrayRemove([user.uid]),
-      'dislikedUsers':
-          !isLike
-              ? FieldValue.arrayUnion([user.uid])
-              : FieldValue.arrayRemove([user.uid]),
-    });
+    // Beğeni durumunu güncelle
+    if (isLike) {
+      dislikedUsers.remove(user.uid);
+      likedUsers.add(user.uid);
+    } else {
+      likedUsers.remove(user.uid);
+      dislikedUsers.add(user.uid);
+    }
 
-    setState(() {
-      userLiked = isLike;
-      _fetchLikesAndDislikes();
-    });
+    // Firestore'a güncellenmiş veriyi yaz
+    await menuDocRef.set({
+      'likedUsers': likedUsers,
+      'dislikedUsers': dislikedUsers,
+    }, SetOptions(merge: true)); // Mevcut veriyi silmeden günceller
+
+    // UI'yi güncelle
+    _fetchLikesAndDislikes();
   }
 
   void _showComments() {
