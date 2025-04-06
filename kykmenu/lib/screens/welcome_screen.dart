@@ -41,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   String getMealIcon(int index, bool isBreakfast) {
     int iconIndex = isBreakfast ? (index % 4) + 4 : index % 4;
-    return icons[iconIndex] ?? 'utensils'; // varsayılan ikon
+    return icons[iconIndex]; // varsayılan ikon
   }
 
   @override
