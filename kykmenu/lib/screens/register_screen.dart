@@ -36,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: emailController.text,
         password: passwordController.text,
         username: usernameController.text,
-        city: selectedCity!, // Şehir bilgisi eklenebilir
+        city: selectedCity!,
       );
 
       showDialog(
@@ -124,7 +124,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-
+                // Şehir Seçimi
+                DropdownButtonFormField<String>(
+                  value: selectedCity,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCity = newValue!;
+                    });
+                  },
+                  items:
+                      cities.map((String city) {
+                        return DropdownMenuItem<String>(
+                          value: city,
+                          child: Text(
+                            city,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ), // Daha küçük font
+                          ),
+                        );
+                      }).toList(),
+                  dropdownColor: Colors.blue.shade800,
+                  borderRadius: BorderRadius.circular(12),
+                  decoration: _buildInputDecoration(
+                    "Şehir",
+                    Icons.location_city,
+                  ).copyWith(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ), // Daha az padding
+                  ),
+                  iconEnabledColor: Colors.white,
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+                SizedBox(height: 16),
                 // E-mail alanı
                 TextField(
                   controller: emailController,
@@ -147,44 +182,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 SizedBox(height: 16),
-                // Şehir Alanı
-                DropdownButtonFormField<String>(
-                  value: selectedCity,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedCity = newValue!;
-                    });
-                  },
-                  items:
-                      cities.map((String city) {
-                        return DropdownMenuItem<String>(
-                          value: city,
-                          child: Text(
-                            city,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ), // Daha küçük font
-                          ),
-                        );
-                      }).toList(),
-                  dropdownColor: Colors.blue.shade800,
-                  decoration: _buildInputDecoration(
-                    "Şehir",
-                    Icons.location_city,
-                  ).copyWith(
-                    isDense: true, // Daha sıkışık hale getirir
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ), // Daha az padding
-                  ),
-                  iconEnabledColor: Colors.white,
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-
-                SizedBox(height: 16),
-
                 // Şifre alanı
                 TextField(
                   controller: passwordController,
@@ -194,16 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: _buildInputDecoration("Şifre", Icons.lock),
                 ),
                 SizedBox(height: 16),
-
-                // Şifre tekrar alanı
-                TextField(
-                  controller: confirmPasswordController,
-                  textInputAction: TextInputAction.done,
-                  obscureText: true,
-                  style: TextStyle(color: Colors.white),
-                  decoration: _buildInputDecoration("Şifre Tekrar", Icons.lock),
-                ),
-                SizedBox(height: 20),
 
                 errorMessage != null
                     ? Text(
