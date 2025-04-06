@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kykmenu/screens/welcome_screen.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:provider/provider.dart'; // Bunu ekle!
+import 'package:kykmenu/components/theme_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -63,6 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Ayarlar', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -102,6 +105,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           SizedBox(height: 20),
+          // dark mode switch
+          SwitchListTile(
+            title: Text("Karanlık Mod"),
+            value: themeProvider.isDarkMode,
+            onChanged: (value) {
+              themeProvider.toggleTheme(value);
+            },
+            secondary: Icon(Icons.brightness_6),
+          ),
+          SizedBox(height: 20),
+          // bildirim ayarları
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

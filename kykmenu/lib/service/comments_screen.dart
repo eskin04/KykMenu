@@ -49,7 +49,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         height:
             MediaQuery.of(context).size.height * 0.75, // Ekranın %75'ini kaplar
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Column(
@@ -71,7 +71,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         .orderBy(
                           'timestamp',
                           descending: true,
-                        ) // 📌 Tarihe göre sıralama
+                        ) // Tarihe göre sıralama
                         .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {

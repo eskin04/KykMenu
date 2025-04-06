@@ -265,14 +265,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Container(
               alignment: Alignment.center,
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 35, vertical: 15),
+              padding: EdgeInsets.symmetric(horizontal: 35, vertical: 25),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color.fromARGB(255, 129, 184, 199),
-                    const Color.fromARGB(255, 67, 155, 160),
-                  ],
-                ),
+                color: Theme.of(context).primaryColor,
                 boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
               ),
               child: Text(
@@ -313,13 +308,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             });
                           },
                           child: Container(
+                            width: 60,
                             margin: EdgeInsets.symmetric(horizontal: 5),
-                            padding: EdgeInsets.all(12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 20,
+                            ),
                             decoration: BoxDecoration(
                               color:
                                   selectedDate.day == day.day
-                                      ? Colors.green
-                                      : Colors.grey[300],
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.secondary,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Column(
@@ -327,7 +326,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Text(
                                   dayName,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w900,
                                     color:
                                         selectedDate.day == day.day
                                             ? Colors.white
@@ -338,7 +337,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Text(
                                   day.day.toString(),
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w900,
                                     color:
                                         selectedDate.day == day.day
                                             ? Colors.white
@@ -384,7 +383,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.background,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(color: Colors.black12, blurRadius: 8),
@@ -404,7 +403,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.background,
+
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(color: Colors.black12, blurRadius: 8),
@@ -511,7 +511,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             ),
 
                             IconButton(
-                              icon: Icon(Icons.comment, color: Colors.blue),
+                              icon: Icon(
+                                Icons.comment,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                               onPressed:
                                   menuExists
                                       ? _showComments
