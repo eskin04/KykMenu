@@ -19,6 +19,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   String? errorMessage = '';
+  String? selectedCity = 'Ankara';
+  final List<String> cities = [
+    'Antalya',
+    'İstanbul',
+    'Ankara',
+    'İzmir',
+    'Bursa',
+    'Adana',
+  ];
 
   // Kayıt olma işlemi için gerekli fonksiyon
   Future<void> register() async {
@@ -27,6 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: emailController.text,
         password: passwordController.text,
         username: usernameController.text,
+        city: selectedCity!, // Şehir bilgisi eklenebilir
       );
 
       showDialog(
@@ -136,6 +146,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Icons.person,
                   ),
                 ),
+                SizedBox(height: 16),
+                // Şehir Alanı
+                DropdownButtonFormField<String>(
+                  value: selectedCity,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCity = newValue!;
+                    });
+                  },
+                  items:
+                      cities.map((String city) {
+                        return DropdownMenuItem<String>(
+                          value: city,
+                          child: Text(
+                            city,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ), // Daha küçük font
+                          ),
+                        );
+                      }).toList(),
+                  dropdownColor: Colors.blue.shade800,
+                  decoration: _buildInputDecoration(
+                    "Şehir",
+                    Icons.location_city,
+                  ).copyWith(
+                    isDense: true, // Daha sıkışık hale getirir
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ), // Daha az padding
+                  ),
+                  iconEnabledColor: Colors.white,
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+
                 SizedBox(height: 16),
 
                 // Şifre alanı
