@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kykmenu/screens/settings_screen.dart';
 import 'package:kykmenu/service/menu.dart';
@@ -31,25 +30,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   List<String> icons = [
     'utensils',
-    'coffee',
-    'apple-alt',
-    'carrot',
-    'fish',
-    'hamburger',
-    'bread-slice',
+    'soup',
+    'pasta',
+    'dessert',
     'egg',
+    'cheese',
+    'bread',
+    'honey',
   ];
 
-  Map<String, IconData> iconMap = {
-    'utensils': FontAwesomeIcons.utensils,
-    'coffee': FontAwesomeIcons.mugHot,
-    'apple-alt': FontAwesomeIcons.appleAlt,
-    'carrot': FontAwesomeIcons.carrot,
-    'fish': FontAwesomeIcons.fish,
-    'hamburger': FontAwesomeIcons.hamburger,
-    'bread-slice': FontAwesomeIcons.breadSlice,
-    'egg': FontAwesomeIcons.egg,
-  };
+  String getMealIcon(int index, bool isBreakfast) {
+    int iconIndex = isBreakfast ? (index % 4) + 4 : index % 4;
+    return icons[iconIndex] ?? 'utensils'; // varsayılan ikon
+  }
 
   @override
   void initState() {
@@ -246,11 +239,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
-  IconData getMealIcon(int index, bool isBreakfast) {
-    int iconIndex = isBreakfast ? (index % 4) + 4 : index % 4;
-    return iconMap[icons[iconIndex]] ?? FontAwesomeIcons.utensils;
-  }
-
   @override
   Widget build(BuildContext context) {
     int daysInMonth =
@@ -383,7 +371,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(color: Colors.black12, blurRadius: 8),
@@ -403,7 +391,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
 
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
@@ -435,9 +423,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               .entries
                               .map(
                                 (entry) => ListTile(
-                                  leading: Icon(
-                                    getMealIcon(entry.key, isBreakfast),
-                                    color: Colors.green,
+                                  leading: Container(
+                                    padding: EdgeInsets.all(8),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.green.shade100.withOpacity(
+                                        0.8,
+                                      ),
+                                    ),
+                                    child: Image.asset(
+                                      'assets/icons/${getMealIcon(entry.key, isBreakfast)}.png',
+                                    ),
                                   ),
                                   title: Text(
                                     entry.value.trim(),
@@ -527,7 +525,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   Container(
                     // sayfanın en altına sabitlenmesi için
-                    margin: EdgeInsets.only(top: 150),
+                    margin: EdgeInsets.only(top: 130),
                     width: double.maxFinite,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),

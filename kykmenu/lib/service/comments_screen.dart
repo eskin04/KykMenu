@@ -49,7 +49,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         height:
             MediaQuery.of(context).size.height * 0.75, // Ekranın %75'ini kaplar
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Column(
