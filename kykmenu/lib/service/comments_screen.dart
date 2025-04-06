@@ -33,7 +33,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         .collection('comments')
         .add({
           'comment': commentText,
-          'timestamp': FieldValue.serverTimestamp(), // 🕒 Timestamp ekleniyor
+          'timestamp': FieldValue.serverTimestamp(),
           'userid': userId,
           'username': userName,
         });
@@ -44,91 +44,96 @@ class _CommentsScreenState extends State<CommentsScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
-        padding: EdgeInsets.all(16),
-        height:
-            MediaQuery.of(context).size.height * 0.75, // Ekranın %75'ini kaplar
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom:
+              MediaQuery.of(
+                context,
+              ).viewInsets.bottom, // 👈 Klavye açıldığında padding veriyoruz
         ),
-        child: Column(
-          children: [
-            Text(
-              "Yorumlar",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Divider(),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance
-                        .collection('menus')
-                        .doc(widget.city)
-                        .collection(widget.date.substring(0, 7))
-                        .doc(widget.date)
-                        .collection('comments')
-                        .orderBy(
-                          'timestamp',
-                          descending: true,
-                        ) // Tarihe göre sıralama
-                        .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-
-                  var comments = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    itemCount: comments.length,
-                    itemBuilder: (context, index) {
-                      var commentData =
-                          comments[index].data() as Map<String, dynamic>;
-
-                      String commentText = commentData['comment'] ?? "";
-                      String username =
-                          commentData['username'] ?? "Bilinmeyen Kullanıcı";
-                      DateTime timestamp =
-                          (commentData['timestamp'] as Timestamp?)?.toDate() ??
-                          DateTime.now();
-
-                      return ListTile(
-                        title: Text(commentText),
-                        subtitle: Text(
-                          "$username • ${DateFormat('dd MMM yyyy HH:mm', 'tr_TR').format(timestamp)}",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      );
-                    },
-                  );
-                },
+        child: Container(
+          padding: EdgeInsets.all(16),
+          height: MediaQuery.of(context).size.height * 0.75,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            children: [
+              Text(
+                "Yorumlar",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _commentController,
-                      decoration: InputDecoration(
-                        hintText: "Yorumunuzu yazın...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+              Divider(),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream:
+                      FirebaseFirestore.instance
+                          .collection('menus')
+                          .doc(widget.city)
+                          .collection(widget.date.substring(0, 7))
+                          .doc(widget.date)
+                          .collection('comments')
+                          .orderBy('timestamp', descending: true)
+                          .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    var comments = snapshot.data!.docs;
+
+                    return ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        var commentData =
+                            comments[index].data() as Map<String, dynamic>;
+
+                        String commentText = commentData['comment'] ?? "";
+                        String username =
+                            commentData['username'] ?? "Bilinmeyen Kullanıcı";
+                        DateTime timestamp =
+                            (commentData['timestamp'] as Timestamp?)
+                                ?.toDate() ??
+                            DateTime.now();
+
+                        return ListTile(
+                          title: Text(commentText),
+                          subtitle: Text(
+                            "$username • ${DateFormat('dd MMM yyyy HH:mm', 'tr_TR').format(timestamp)}",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          hintText: "Yorumunuzu yazın...",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(Icons.send, color: Colors.green),
-                    onPressed: () => _addComment(_commentController.text),
-                  ),
-                ],
+                    SizedBox(width: 10),
+                    IconButton(
+                      icon: Icon(Icons.send, color: Colors.green),
+                      onPressed: () => _addComment(_commentController.text),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
