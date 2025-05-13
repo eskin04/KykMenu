@@ -41,8 +41,16 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Menü Ekle / Güncelle"),
+        title: Text("Menü Düzenle"),
         backgroundColor: Colors.green.shade700,
+        titleTextStyle: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        toolbarHeight: 80,
+        //change back button color to white
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(24),
@@ -86,7 +94,7 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
 
             SizedBox(height: 20),
 
-            Text("Şehir Seç:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Üniversite:", style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: selectedCity,
@@ -121,7 +129,6 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
               controller: breakfastController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText: "Yemekleri virgül ile ayır",
                 filled: true,
                 fillColor: Colors.green.shade50,
                 border: OutlineInputBorder(
@@ -141,7 +148,6 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
               controller: dinnerController,
               maxLines: 2,
               decoration: InputDecoration(
-                hintText: "Yemekleri virgül ile ayır",
                 filled: true,
                 fillColor: Colors.green.shade50,
                 border: OutlineInputBorder(
@@ -156,8 +162,19 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _saveMenu,
-                icon: Icon(Icons.save),
-                label: Text("Menüyü Kaydet"),
+                icon: Icon(
+                  Icons.save,
+                  size: 24,
+                  color: Colors.white,
+                ), // Iconu burada ekliyoruz
+                label: Text(
+                  "Menüyü Kaydet",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.green.shade600,

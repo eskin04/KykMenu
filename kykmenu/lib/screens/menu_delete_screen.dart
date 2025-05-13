@@ -68,6 +68,14 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
       appBar: AppBar(
         title: Text("Menü Sil"),
         backgroundColor: Colors.green.shade700,
+        titleTextStyle: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        toolbarHeight: 80,
+        //change back button color to white
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: EdgeInsets.all(24),
@@ -111,7 +119,7 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
 
             SizedBox(height: 20),
 
-            Text("Şehir Seç:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("Üniversite:", style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: selectedCity,
@@ -142,8 +150,15 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
 
             ElevatedButton(
               onPressed: _fetchMenu,
-              child: Text("Menüyü Getir"),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: Text(
+                "Menü Ara",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
 
             SizedBox(height: 20),
@@ -154,24 +169,70 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Kahvaltı: ${foundMenu!['breakfast'] ?? '-'}"),
-                  SizedBox(height: 8),
-                  Text("Akşam Yemeği: ${foundMenu!['dinner'] ?? '-'}"),
-                  SizedBox(height: 20),
+                  // get in two cards, one for breakfast and one for dinner
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Kahvaltı",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(foundMenu!['breakfast'] ?? "Veri yok"),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Akşam Yemeği",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(foundMenu!['dinner'] ?? "Veri yok"),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
                   ElevatedButton.icon(
                     onPressed: _deleteMenu,
-                    icon: Icon(Icons.delete),
-                    label: Text("Menüyü Sil"),
+                    icon: Icon(Icons.delete, color: Colors.white),
+                    label: Text(
+                      "Sil",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
                   ),
                 ],
               )
-            else
-              Text(
-                "Bu tarihte menü bulunamadı.",
-                style: TextStyle(color: Colors.red),
+            else if (foundMenu == null)
+              Center(
+                child: Text(
+                  "Menü bulunamadı.",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
           ],
         ),

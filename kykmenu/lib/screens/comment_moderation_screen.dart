@@ -82,6 +82,14 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
       appBar: AppBar(
         title: Text("Yorumları Yönet"),
         backgroundColor: Colors.green.shade700,
+        titleTextStyle: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        toolbarHeight: 80,
+        //change back button color to white
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: EdgeInsets.all(24),
@@ -146,7 +154,7 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Şehir:",
+                    "Üniversite:",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -186,8 +194,15 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
 
             ElevatedButton(
               onPressed: _fetchComments,
-              child: Text("Yorumları Getir"),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: Text(
+                "Yorumları Getir",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
 
             SizedBox(height: 20),
