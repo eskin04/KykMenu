@@ -23,12 +23,16 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
     });
 
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String monthPath = formattedDate.substring(0, 7);
+
     try {
-      QuerySnapshot snapshot =
+      final snapshot =
           await FirebaseFirestore.instance
-              .collection('comments')
+              .collection('menus')
               .doc(selectedCity)
-              .collection(formattedDate)
+              .collection(monthPath)
+              .doc(formattedDate)
+              .collection('comments')
               .get();
 
       setState(() {
@@ -37,7 +41,7 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
                 .map(
                   (doc) => {
                     'id': doc.id,
-                    'text': doc['text'],
+                    'text': doc['comment'],
                     'user': doc['username'] ?? 'Bilinmeyen',
                   },
                 )
@@ -54,11 +58,14 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
 
   Future<void> _deleteComment(String commentId) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String monthPath = formattedDate.substring(0, 7);
 
     await FirebaseFirestore.instance
-        .collection('comments')
+        .collection('menus')
         .doc(selectedCity)
-        .collection(formattedDate)
+        .collection(monthPath)
+        .doc(formattedDate)
+        .collection('comments')
         .doc(commentId)
         .delete();
 
