@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'register_screen.dart';
 import 'welcome_screen.dart';
+import 'admin_panel_screen.dart';
 import '../service/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,15 +25,35 @@ class _LoginScreenState extends State<LoginScreen> {
         email: emailController.text,
         password: passwordController.text,
       );
-      // Giriş başarılıysa WelcomeScreen'e yönlendir
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
-      );
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        final userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        final role = userDoc.data()?['role'] ?? 'user';
+
+        if (role == 'admin') {
+          // Admin kullanıcı
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => AdminPanelScreen()),
+          );
+        } else {
+          // Normal kullanıcı
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => WelcomeScreen()),
+          );
+        }
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
 
-      // Firebase hata kodlarına göre Türkçe mesajlar döndürüyoruz
       switch (e.code) {
         case 'user-not-found':
           errorMessage = 'Bu kullanıcı bulunamadı';
@@ -50,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case 'too-many-requests':
           errorMessage =
-              'Çok fazla deneme yaptınız, lütfen bir süre sonra tekrar deneyin';
+              'Çok fazla deneme yaptınız, lütfen sonra tekrar deneyin';
           break;
         default:
           errorMessage = 'Giriş Bilgilerinizi Kontrol Edin';

@@ -94,6 +94,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       setState(() {
         selectedCity = 'Ankara';
       });
+      _fetchMenu();
+      _fetchLikesAndDislikes();
     }
   }
 
