@@ -168,7 +168,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 1),
-
+                // 👇 Yeni eklenen "Kayıt Olmadan Devam Et"
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Kayıt Olmadan Devam Et',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
                 // Kayıt Ol Butonu
                 TextButton(
                   onPressed: () {
@@ -177,6 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (context) => RegisterScreen()),
                     );
                   },
+
+                  //Kayıt Olmadan Devam Et
                   child: Text(
                     'Hesabın yok mu? Kayıt ol!',
                     style: TextStyle(color: Colors.white, fontSize: 16),

@@ -66,6 +66,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       setState(() {
         userName = userDoc['username'] ?? 'Kullanıcı';
       });
+    } else {
+      setState(() {
+        userName = 'Misafir';
+      });
     }
   }
 
@@ -83,6 +87,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         _fetchLikesAndDislikes();
 
         print("Seçilen şehir: $selectedCity");
+      });
+    }
+    // Eğer kullanıcı yoksa varsayılan bir şehir ayarla
+    else {
+      setState(() {
+        selectedCity = 'Ankara';
       });
     }
   }
