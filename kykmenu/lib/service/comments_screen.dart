@@ -55,7 +55,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           padding: EdgeInsets.all(16),
           height: MediaQuery.of(context).size.height * 0.75,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Column(
