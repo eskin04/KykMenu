@@ -19,15 +19,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   String? errorMessage = '';
-  String? selectedCity = 'Ankara';
-  final List<String> cities = [
-    'Antalya',
-    'İstanbul',
-    'Ankara',
-    'İzmir',
-    'Bursa',
-    'Adana',
-  ];
+  String? selectedCity = 'Dokuz Eylül';
+  final List<String> cities = ['Dokuz Eylül', 'Ege', 'Bakırçay', 'Demokrasi'];
 
   // Kayıt olma işlemi için gerekli fonksiyon
   Future<void> register() async {
@@ -111,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Logo kısmı
-                Image.asset('assets/logo.png', height: 120),
+                Image.asset('assets/logo.png', height: 170),
                 SizedBox(height: 24),
 
                 // "Kayıt Ol" başlığı
@@ -148,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   dropdownColor: Colors.blue.shade800,
                   borderRadius: BorderRadius.circular(12),
                   decoration: _buildInputDecoration(
-                    "Şehir",
+                    "Üniversite",
                     Icons.location_city,
                   ).copyWith(
                     contentPadding: EdgeInsets.symmetric(

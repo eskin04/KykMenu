@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Logo kısmı
-                Image.asset('assets/logo.png', height: 120),
+                Image.asset('assets/logo.png', height: 170),
                 SizedBox(height: 24),
 
                 // "Hoşgeldiniz" başlığı

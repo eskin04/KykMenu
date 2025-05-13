@@ -82,7 +82,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               .doc(user.uid)
               .get();
       setState(() {
-        selectedCity = userDoc['city'] ?? 'Ankara';
+        selectedCity = userDoc['city'] ?? 'Dokuz Eylül';
         _fetchMenu();
         _fetchLikesAndDislikes();
 
@@ -92,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     // Eğer kullanıcı yoksa varsayılan bir şehir ayarla
     else {
       setState(() {
-        selectedCity = 'Ankara';
+        selectedCity = 'Dokuz Eylül';
       });
       _fetchMenu();
       _fetchLikesAndDislikes();

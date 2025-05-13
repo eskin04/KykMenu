@@ -12,7 +12,7 @@ class CommentModerationScreen extends StatefulWidget {
 
 class _CommentModerationScreenState extends State<CommentModerationScreen> {
   DateTime selectedDate = DateTime.now();
-  String selectedCity = 'Ankara';
+  String selectedCity = 'Dokuz Eylül';
   List<Map<String, dynamic>> comments = [];
   bool isLoading = false;
 
@@ -163,7 +163,7 @@ class _CommentModerationScreenState extends State<CommentModerationScreen> {
                   child: DropdownButtonFormField<String>(
                     value: selectedCity,
                     items:
-                        ['Ankara', 'İstanbul', 'İzmir', 'Bursa']
+                        ['Dokuz Eylül', 'Ege', 'Bakırçay', 'Demokrasi']
                             .map(
                               (city) => DropdownMenuItem(
                                 child: Text(city),

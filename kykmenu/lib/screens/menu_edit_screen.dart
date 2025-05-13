@@ -12,7 +12,7 @@ class MenuEditScreen extends StatefulWidget {
 
 class _MenuEditScreenState extends State<MenuEditScreen> {
   DateTime selectedDate = DateTime.now();
-  String selectedCity = 'Ankara';
+  String selectedCity = 'Dokuz Eylül';
   final TextEditingController breakfastController = TextEditingController();
   final TextEditingController dinnerController = TextEditingController();
 
@@ -99,7 +99,7 @@ class _MenuEditScreenState extends State<MenuEditScreen> {
             DropdownButtonFormField<String>(
               value: selectedCity,
               items:
-                  ['Ankara', 'İstanbul', 'İzmir', 'Bursa']
+                  ['Dokuz Eylül', 'Ege', 'Bakırçay', 'Demokrasi']
                       .map(
                         (city) =>
                             DropdownMenuItem(child: Text(city), value: city),

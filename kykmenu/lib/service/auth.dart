@@ -29,6 +29,7 @@ class Auth {
         'username': username,
         'email': email,
         'city': city,
+        'role': 'user',
         'createdAt': FieldValue.serverTimestamp(),
       });
     }

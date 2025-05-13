@@ -14,16 +14,9 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String selectedCity = 'Ankara';
+  String selectedCity = 'Dokuz Eylül';
 
-  final List<String> cities = [
-    'Antalya',
-    'İstanbul',
-    'Ankara',
-    'İzmir',
-    'Bursa',
-    'Adana',
-  ];
+  final List<String> cities = ['Dokuz Eylül', 'Ege', 'Bakırçay', 'Demokrasi'];
 
   @override
   void initState() {
@@ -48,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (doc.exists) {
       setState(() {
-        selectedCity = doc['city'] ?? 'Ankara';
+        selectedCity = doc['city'] ?? 'Dokuz Eylül';
       });
     }
   }
@@ -85,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           ListTile(
             leading: Icon(Icons.location_city),
-            title: Text('Şehir Seçiniz'),
+            title: Text('Üniversite'),
             trailing: DropdownButton<String>(
               value: selectedCity,
               onChanged: (String? newValue) {

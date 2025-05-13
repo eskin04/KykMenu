@@ -11,7 +11,7 @@ class MenuDeleteScreen extends StatefulWidget {
 
 class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
   DateTime selectedDate = DateTime.now();
-  String selectedCity = 'Ankara';
+  String selectedCity = 'Dokuz Eylül';
   Map<String, dynamic>? foundMenu;
   bool isLoading = false;
 
@@ -124,7 +124,7 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
             DropdownButtonFormField<String>(
               value: selectedCity,
               items:
-                  ['Ankara', 'İstanbul', 'İzmir', 'Bursa']
+                  ['Dokuz Eylül', 'Ege', 'Bakırçay', 'Demokrasi']
                       .map(
                         (city) =>
                             DropdownMenuItem(child: Text(city), value: city),
@@ -170,59 +170,113 @@ class _MenuDeleteScreenState extends State<MenuDeleteScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // get in two cards, one for breakfast and one for dinner
-                  Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Kahvaltı",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                  SizedBox(
+                    width: double.infinity,
+                    height: 130,
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      color: Colors.green.shade50,
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Kahvaltı",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade800,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(foundMenu!['breakfast'] ?? "Veri yok"),
-                        ],
+                            SizedBox(height: 12),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  foundMenu!['breakfast'] ?? "Veri yok",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Akşam Yemeği",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(foundMenu!['dinner'] ?? "Veri yok"),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
 
-                  ElevatedButton.icon(
-                    onPressed: _deleteMenu,
-                    icon: Icon(Icons.delete, color: Colors.white),
-                    label: Text(
-                      "Sil",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  SizedBox(height: 20),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 130,
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      color: Colors.green.shade50,
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Akşam Yemeği",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade800,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  foundMenu!['dinner'] ?? "Veri yok",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                  ),
+                  SizedBox(height: 30),
+
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: _deleteMenu,
+                      icon: Icon(
+                        Icons.delete_forever_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      label: Text(
+                        "Menüyü Sil",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        elevation: 6,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        shadowColor: Colors.redAccent.shade100,
+                      ),
                     ),
                   ),
                 ],
